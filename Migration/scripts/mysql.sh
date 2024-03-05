@@ -1,0 +1,1 @@
+sudo docker run --name topicmatch-mysql -e MYSQL_DATABASE=topicmatchdb  -e MYSQL_USER=mysqluser -e MYSQL_ROOT_PASSWORD=password -e MYSQL_PASSWORD=password -d -p 3306:3306 mysql:latest
