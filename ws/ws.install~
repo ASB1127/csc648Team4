@@ -1,0 +1,1 @@
+sudo docker run -it -p 80:80 -v /home/ubuntu/ws/html:/app/html --name ws amit/topic-match:ws-v0.0.1
