@@ -1,4 +1,4 @@
-docker network create topicmatch
-docker run -d --name db --network topicmatch -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 mysql
-sudo docker run -d --network topicmatch -it -p 80:8000 -v /home/ubuntu/ws/html:/app/html --name ws amit/topic-match:ws-v0.0.1
-sudo docker cp createTables.sql db:/.
+sudo docker network create topicmatch
+sudo docker run -d --name db --network topicmatch -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 mysql
+sudo docker run -d --network topicmatch -it -p 80:8000 -v /home/ubuntu/csc648Team4/ws/html:/app/html --name ws amit/topic-match:latest
+sudo docker cp ./src/createTables.sql db:/.

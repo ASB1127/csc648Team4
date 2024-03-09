@@ -1,12 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
+from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from typing import Annotated
 import logging
 import mysql.connector
 
-cnx = mysql.connector.connect(user='root', password='password',
-                              host='db',
-                              database='TopicMatch')
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="./html/static"), name="static")
 # setup loggers
 logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
 
@@ -14,6 +15,27 @@ logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
 logger = logging.getLogger(__name__) 
 
 logger.info("logging from the root logger")
+
+
+
+cnx = mysql.connector.connect(user='root', password='password',
+                              host='db',
+                              database='TopicMatch')
+
+
+class Msg(BaseModel):
+    toUser: int
+    fromUser: int
+    msg: str
+    
+    
+@app.post("/process/message")
+async def process_message(toUser: Annotated[int,Form()],fromUser:Annotated[int,Form()],msg: Annotated[str,Form()]):
+    logger.info("Msg")
+    return {
+        "msg":msg
+    }
+    
 
 @app.get("/")
 async def root():
@@ -34,4 +56,16 @@ async def sendMessage(fromUser,toUser,msg):
     cnx.commit()
     cursor.close()
     return {"message":"message sent"}
+
+
+@app.get("/receive/message/{fromUser}")
+async def receiveMessage(fromUser:int):
+    cursor = cnx.cursor()
+    query = "SELECT mID, msg FROM  Message WHERE fromUser=%s"
+    cursor.execute(query, [fromUser])
+    msgEntry=cursor.fetchone()
+    logger.info(msgEntry)
+    cursor.close()
+    return {"mID":msgEntry[0],"msg":msgEntry[1]}
             
+
